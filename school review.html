@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnerHub — School Reviewer Platform</title>
+    <style>
+        :root {
+            --bg: #f5f6fa;
+            --surface: #ffffff;
+            --surface2: #eef1f7;
+            --text: #1a1a2e;
+            --text2: #555;
+            --text3: #888;
+            --primary: #3b5998;
+            --primary-light: #5c7bc0;
+            --accent: #f0a030;
+            --border: #dde1ed;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.10);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --nav-width: 260px;
+            --header-height: 64px;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --card-hover: translateY(-4px);
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+        }
+
+        .dark-mode {
+            --bg: #0f1119;
+            --surface: #1a1d2b;
+            --surface2: #222636;
+            --text: #e0e0e0;
+            --text2: #b0b0b0;
+            --text3: #777;
+            --primary: #6b8dd6;
+            --primary-light: #8aa8f0;
+            --border: #2a2d3a;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35);
+            --accent: #f5b840;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--nav-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition), background var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .sidebar-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+        .sidebar-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        /* Fallback text logo if image fails to load */
+        .sidebar-logo .logo-fallback {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        .sidebar-subtitle {
+            font-size: 0.7rem;
+            color: var(--text3);
+            font-weight: 500;
+        }
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .nav-section-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text3);
+            padding: 14px 22px 6px;
+            font-weight: 700;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text2);
+            text-decoration: none;
+            user-select: none;
+            position: relative;
+        }
+        .nav-item:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+        .nav-item.active {
+            background: var(--surface2);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+        .nav-item .nav-icon {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .nav-item.home-nav {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .sidebar-footer {
+            padding: 14px 22px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dark-toggle {
+            width: 44px;
+            height: 26px;
+            border-radius: 13px;
+            background: var(--border);
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .dark-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .dark-mode .dark-toggle {
+            background: var(--primary);
+        }
+        .dark-mode .dark-toggle::after {
+            transform: translateX(18px);
+        }
+        .dark-label {
+            font-size: 0.78rem;
+            color: var(--text2);
+            font-weight: 500;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: var(--nav-width);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin var(--transition), background var(--transition), color var(--transition);
+        }
+        .topbar {
+            height: var(--header-height);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow);
+            transition: background var(--transition);
+        }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--text);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .search-wrap {
+            flex: 1;
+            max-width: 480px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 24px;
+            border: 2px solid var(--border);
+            background: var(--surface2);
+            font-size: 0.9rem;
+            color: var(--text);
+            transition: all 0.3s;
+            font-family: var(--font);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3);
+            font-size: 1rem;
+        }
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--surface2);
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover {
+            background: var(--border);
+        }
+        .content-area {
+            flex: 1;
+            padding: 28px;
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+            transition: opacity 0.35s;
+        }
+        .page {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .page.active-page {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CARDS */
+        .section-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        .section-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            cursor: pointer;
+            transition: all var(--transition);
+            border: 2px solid transparent;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .section-card:hover {
+            transform: var(--card-hover);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+        .section-card .card-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+        .section-card .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .section-card .card-subtitle {
+            font-size: 0.82rem;
+            color: var(--text2);
+        }
+        .card-accent-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        .badge-acad {
+            background: #e8f0fe;
+            color: #3b5998;
+        }
+        .badge-tech {
+            background: #e6f7f0;
+            color: #1b7a4a;
+        }
+        .badge-ent {
+            background: #fef7e0;
+            color: #b8860b;
+        }
+        .badge-cook {
+            background: #fde8d0;
+            color: #c4450c;
+        }
+        .badge-code {
+            background: #e0f0ff;
+            color: #0d4f8b;
+        }
+        .dark-mode .badge-acad {
+            background: #1e2d44;
+            color: #8aadf4;
+        }
+        .dark-mode .badge-tech {
+            background: #1a3328;
+            color: #4ecb8c;
+        }
+        .dark-mode .badge-ent {
+            background: #332a18;
+            color: #e0b040;
+        }
+        .dark-mode .badge-cook {
+            background: #3d2215;
+            color: #f07840;
+        }
+        .dark-mode .badge-code {
+            background: #162538;
+            color: #5ba0e0;
+        }
+
+        /* SECTION THEME OVERRIDES */
+        .theme-acad-a {
+            --theme-primary: #1B2A4A;
+            --theme-accent: #D4A843;
+            --theme-bg: #fafaf7;
+            --theme-surface: #fffdf7;
+            --theme-border: #e8dfc8;
+            --theme-text: #1B2A4A;
+        }
+        .dark-mode .theme-acad-a {
+            --theme-primary: #2a3f6a;
+            --theme-accent: #e8c050;
+            --theme-bg: #141c2b;
+            --theme-surface: #1b2333;
+            --theme-border: #2a3345;
+            --theme-text: #e8dcc8;
+        }
+        .theme-acad-b {
+            --theme-primary: #2E7D6F;
+            --theme-accent: #C77D4B;
+            --theme-bg: #f9fbf9;
+            --theme-surface: #ffffff;
+            --theme-border: #d8e8e0;
+            --theme-text: #1e3a30;
+        }
+        .dark-mode .theme-acad-b {
+            --theme-primary: #3d9d8c;
+            --theme-accent: #d89060;
+            --theme-bg: #111c18;
+            --theme-surface: #182420;
+            --theme-border: #253530;
+            --theme-text: #c8e0d8;
+        }
+        .theme-acad-c {
+            --theme-primary: #1565C0;
+            --theme-accent: #FF6F00;
+            --theme-bg: #f5f8fc;
+            --theme-surface: #ffffff;
+            --theme-border: #dce6f2;
+            --theme-text: #1a2836;
+        }
+        .dark-mode .theme-acad-c {
+            --theme-primary: #4d8de0;
+            --theme-accent: #ff9040;
+            --theme-bg: #111820;
+            --theme-surface: #18202c;
+            --theme-border: #243040;
+            --theme-text: #c8d8e8;
+        }
+        .theme-acad-d {
+            --theme-primary: #5E35B1;
+            --theme-accent: #FFB300;
+            --theme-bg: #faf8fe;
+            --theme-surface: #ffffff;
+            --theme-border: #e8e0f4;
+            --theme-text: #2a1a44;
+        }
+        .dark-mode .theme-acad-d {
+            --theme-primary: #7d5cc8;
+            --theme-accent: #ffc840;
+            --theme-bg: #151024;
+            --theme-surface: #1c1830;
+            --theme-border: #2c2840;
+            --theme-text: #d8d0f0;
+        }
+        .theme-techpro-a {
+            --theme-primary: #D84315;
+            --theme-accent: #FFA726;
+            --theme-bg: #fffaf5;
+            --theme-surface: #fffdf9;
+            --theme-border: #f0e0d0;
+            --theme-text: #3e1f0d;
+        }
+        .dark-mode .theme-techpro-a {
+            --theme-primary: #e86030;
+            --theme-accent: #ffb840;
+            --theme-bg: #1c1410;
+            --theme-surface: #241c16;
+            --theme-border: #382c22;
+            --theme-text: #e8d8c8;
+        }
+        .theme-techpro-b {
+            --theme-primary: #00d4ff;
+            --theme-accent: #00ff88;
+            --theme-bg: #0d0f18;
+            --theme-surface: #151826;
+            --theme-border: #1e2338;
+            --theme-text: #d0d8f0;
+        }
+        .dark-mode .theme-techpro-b {
+            --theme-primary: #00d4ff;
+            --theme-accent: #00ff88;
+            --theme-bg: #0d0f18;
+            --theme-surface: #151826;
+            --theme-border: #1e2338;
+            --theme-text: #d0d8f0;
+        }
+        .theme-techpro-c {
+            --theme-primary: #37474F;
+            --theme-accent: #26C6DA;
+            --theme-bg: #f5f7f8;
+            --theme-surface: #ffffff;
+            --theme-border: #dde4e8;
+            --theme-text: #1a262b;
+        }
+        .dark-mode .theme-techpro-c {
+            --theme-primary: #5a7888;
+            --theme-accent: #40d8e8;
+            --theme-bg: #101518;
+            --theme-surface: #182024;
+            --theme-border: #243038;
+            --theme-text: #c8d8e0;
+        }
+
+        /* Force techpro-b base colors even in light mode via class on body */
+        body.techpro-b-active:not(.dark-mode) {
+            --bg: #0d0f18;
+            --surface: #151826;
+            --surface2: #1e2338;
+            --text: #d0d8f0;
+            --text2: #a0a8c0;
+            --text3: #6a7288;
+            --border: #1e2338;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        /* TOPIC GROUPS — FIXES ORDER */
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .topic-group {
+            display: flex;
+            flex-direction: column;
+            background: var(--theme-surface, var(--surface));
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--theme-border, var(--border));
+            overflow: hidden;
+            transition: all var(--transition);
+            cursor: default;
+        }
+        .topic-group:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        .topic-group .topic-card {
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            cursor: pointer;
+            padding: 18px 16px;
+            margin: 0;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .topic-group .topic-card:hover {
+            transform: none;
+            box-shadow: none;
+            background: var(--surface2);
+        }
+        .topic-group .expandable {
+            border: none;
+            border-radius: 0;
+            margin: 0;
+            padding: 0 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease, border-color 0.3s ease;
+            background: var(--surface2);
+            border-top: 1px solid transparent;
+        }
+        .topic-group .expandable.open {
+            max-height: 600px;
+            padding: 16px;
+            border-top-color: var(--theme-border, var(--border));
+        }
+        .topic-group .expandable-inner {
+            font-size: 0.85rem;
+            color: var(--text2);
+            line-height: 1.6;
+        }
+        .topic-group .expandable-inner pre {
+            background: #1a1d2b;
+            color: #00ff88;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            margin: 6px 0;
+        }
+
+        .section-page-header {
+            padding: 20px 0 12px;
+            border-bottom: 2px solid var(--theme-border, var(--border));
+            margin-bottom: 20px;
+        }
+        .section-page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--theme-text, var(--text));
+            margin-bottom: 4px;
+        }
+        .section-page-header .adviser-name {
+            font-size: 0.95rem;
+            color: var(--theme-accent, var(--accent));
+            font-weight: 600;
+        }
+
+        .quiz-block {
+            background: var(--theme-surface, var(--surface));
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--theme-border, var(--border));
+            margin-top: 12px;
+        }
+        .quiz-block h3 {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+        .quiz-option {
+            display: block;
+            padding: 10px 14px;
+            margin: 6px 0;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            background: var(--surface2);
+            text-align: left;
+            width: 100%;
+            font-family: var(--font);
+            color: var(--text);
+        }
+        .quiz-option:hover {
+            border-color: var(--primary);
+        }
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #e8f8e8;
+            color: #1a5c1a;
+            font-weight: 600;
+        }
+        .quiz-option.wrong {
+            border-color: var(--danger);
+            background: #fde8e8;
+            color: #8b1a1a;
+            font-weight: 600;
+        }
+        .dark-mode .quiz-option.correct {
+            background: #1a3320;
+            color: #6ecc6e;
+        }
+        .dark-mode .quiz-option.wrong {
+            background: #3d1a1a;
+            color: #e86060;
+        }
+        .quiz-score {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 8px;
+            color: var(--primary);
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 0.9rem;
+            user-select: none;
+        }
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--success);
+            flex-shrink: 0;
+        }
+        .checklist-item.checked span {
+            text-decoration: line-through;
+            color: var(--text3);
+        }
+        .announcement-bar {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 22px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            font-family: var(--font);
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn:hover {
+            opacity: 0.85;
+            transform: scale(1.03);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* MOBILE */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .hamburger {
+                display: block;
+            }
+            .content-area {
+                padding: 16px;
+            }
+            .section-cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+            .search-wrap {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 500px) {
+            .topbar {
+                padding: 0 12px;
+                gap: 8px;
+            }
+            .section-page-header h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+        .overlay.show {
+            display: block;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        /* search no-results */
+        .search-no-results {
+            padding: 30px 20px;
+            text-align: center;
+            color: var(--text3);
+            font-size: 1rem;
+            display: none;
+        }
+        .search-no-results.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <!-- ============================================================
+                     👇 REPLACE THE src ATTRIBUTE BELOW WITH YOUR OWN LOGO IMAGE
+                     Recommended size: 38x38px (square)
+                     Supported formats: PNG, JPG, SVG, WebP
+                     ============================================================ -->
+                <img src="img/MSHS LOGO.jpeg" alt="LearnerHub Logo" id="siteLogo">
+                <span class="logo-fallback" style="display:none;">LH</span>
+            </div>
+            <div>
+                <div class="sidebar-title">LearnerHub</div>
+                <div class="sidebar-subtitle">School Reviewer</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item home-nav active" data-page="home" onclick="navigateTo('home')">
+                <span class="nav-icon">🏠</span> Dashboard
+            </a>
+            <span class="nav-section-label">Academic Sections</span>
+            <a class="nav-item" data-page="acad-a" onclick="navigateTo('acad-a')">
+                <span class="nav-icon">💼</span> ACAD A
+            </a>
+            <a class="nav-item" data-page="acad-b" onclick="navigateTo('acad-b')">
+                <span class="nav-icon">📚</span> ACAD B
+            </a>
+            <a class="nav-item" data-page="acad-c" onclick="navigateTo('acad-c')">
+                <span class="nav-icon">🎓</span> ACAD C
+            </a>
+            <a class="nav-item" data-page="acad-d" onclick="navigateTo('acad-d')">
+                <span class="nav-icon">🏫</span> ACAD D
+            </a>
+            <span class="nav-section-label">TechPro Sections</span>
+            <a class="nav-item" data-page="techpro-a" onclick="navigateTo('techpro-a')">
+                <span class="nav-icon">🍳</span> TECHPRO A
+            </a>
+            <a class="nav-item" data-page="techpro-b" onclick="navigateTo('techpro-b')">
+                <span class="nav-icon">💻</span> TECHPRO B
+            </a>
+            <a class="nav-item" data-page="techpro-c" onclick="navigateTo('techpro-c')">
+                <span class="nav-icon">🖥️</span> TECHPRO C
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="dark-toggle" id="darkToggle" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode"></div>
+            <span class="dark-label">Dark Mode</span>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main" id="mainContent">
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="globalSearch" placeholder="Search lessons, topics, notes..." oninput="handleSearch()">
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-icon" title="Refresh" onclick="location.reload()">🔄</button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content-area" id="contentArea">
+
+            <!-- HOME PAGE -->
+            <div class="page active-page" id="page-home">
+                <div style="margin-bottom:18px;">
+                    <h1 style="font-size:2rem;font-weight:800;color:var(--text);">📖 LearnerHub Reviewer</h1>
+                    <p style="color:var(--text2);margin-top:4px;">Your digital school reviewer platform — access lessons, notes, and quizzes from all class sections.</p>
+                </div>
+                <div class="announcement-bar">
+                    📢 <strong>Latest Update:</strong> New review materials added for TECHPRO B — Programming & Technical Drafting. Check them out!
+                </div>
+                <h2 style="margin-bottom:12px;font-size:1.3rem;color:var(--text);">📋 Class Sections</h2>
+                <div class="section-cards-grid">
+                    <div class="section-card" onclick="navigateTo('acad-a')" style="--card-accent:#D4A843;">
+                        <div class="card-accent-bar" style="background:#D4A843;"></div>
+                        <span class="card-badge badge-ent">ACAD A</span>
+                        <div class="card-title">Entrepreneurship</div>
+                        <div class="card-subtitle">Business concepts, marketing, plans & quizzes</div>
+                        <small style="color:var(--text3);">Adviser: Mrs. Rosario M. Santos</small>
+                    </div>
+                    <div class="section-card" onclick="navigateTo('acad-b')" style="--card-accent:#2E7D6F;">
+                        <div class="card-accent-bar" style="background:#2E7D6F;"></div>
+                        <span class="card-badge badge-acad">ACAD B</span>
+                        <div class="card-title">Academic Excellence</div>
+                        <div class="card-subtitle">Organized lessons, study materials & practice tests</div>
+                        <small style="color:var(--text3);">Adviser: Mr. Juan D. Cruz</small>
+                    </div>
+                    <div class="section-card" onclick="navigateTo('acad-c')" style="--card-accent:#1565C0;">
+                        <div class="card-accent-bar" style="background:#1565C0;"></div>
+                        <span class="card-badge badge-acad">ACAD C</span>
+                        <div class="card-title">Modern Academics</div>
+                        <div class="card-subtitle">Minimal learning interface with organized notes</div>
+                        <small style="color:var(--text3);">Adviser: Ms. Elena G. Reyes</small>
+                    </div>
+                    <div class="section-card" onclick="navigateTo('acad-d')" style="--card-accent:#5E35B1;">
+                        <div class="card-accent-bar" style="background:#5E35B1;"></div>
+                        <span class="card-badge badge-acad">ACAD D</span>
+                        <div class="card-title">Digital Classroom</div>
+                        <div class="card-subtitle">Educational icons, modern cards & lesson quizzes</div>
+                        <small style="color:var(--text3);">Adviser: Mr. Rafael T. Lopez</small>
+                    </div>
+                    <div class="section-card" onclick="navigateTo('techpro-a')" style="--card-accent:#D84315;">
+                        <div class="card-accent-bar" style="background:#D84315;"></div>
+                        <span class="card-badge badge-cook">TECHPRO A</span>
+                        <div class="card-title">Cooking & Culinary</div>
+                        <div class="card-subtitle">Recipes, techniques, food safety & practical activities</div>
+                        <small style="color:var(--text3);">Adviser: Chef Maria L. Fernando</small>
+                    </div>
+                    <div class="section-card" onclick="navigateTo('techpro-b')" style="--card-accent:#00d4ff;">
+                        <div class="card-accent-bar" style="background:#00d4ff;"></div>
+                        <span class="card-badge badge-code">TECHPRO B</span>
+                        <div class="card-title">Programming & Drafting</div>
+                        <div class="card-subtitle">Code examples, CAD tutorials & design concepts</div>
+                        <small style="color:var(--text3);">Adviser: Engr. Mark D. Villanueva</small>
+                    </div>
+                    <div class="section-card" onclick="navigateTo('techpro-c')" style="--card-accent:#26C6DA;">
+                        <div class="card-accent-bar" style="background:#26C6DA;"></div>
+                        <span class="card-badge badge-tech">TECHPRO C</span>
+                        <div class="card-title">General Technology</div>
+                        <div class="card-subtitle">Modern digital classroom with computer-inspired visuals</div>
+                        <small style="color:var(--text3);">Adviser: Mr. Angelo P. Ramirez</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACAD A: Entrepreneurship -->
+            <div class="page" id="page-acad-a">
+                <div class="section-page-header">
+                    <h1>💼 ACAD A — Entrepreneurship</h1>
+                    <p class="adviser-name">Adviser: Mrs. Rosario M. Santos</p>
+                </div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acada-t1')"><h3>📈 Business Concepts</h3><p>Core principles of starting and managing a business.</p><span class="tag">Fundamentals</span></div>
+                        <div class="expandable" id="acada-t1"><div class="expandable-inner"><strong>Key Concepts:</strong> Supply & demand, value proposition, business models (B2B, B2C), SWOT analysis, and the lean startup methodology. Understand how successful entrepreneurs identify market gaps and create sustainable ventures.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acada-t2')"><h3>📣 Marketing Lessons</h3><p>Strategies for promoting products and services.</p><span class="tag">Marketing</span></div>
+                        <div class="expandable" id="acada-t2"><div class="expandable-inner"><strong>4 P's of Marketing:</strong> Product, Price, Place, Promotion. Learn about digital marketing, social media campaigns, SEO basics, and building brand identity.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acada-t3')"><h3>📝 Business Plans</h3><p>How to write a comprehensive business plan.</p><span class="tag">Planning</span></div>
+                        <div class="expandable" id="acada-t3"><div class="expandable-inner">Executive summary, company description, market analysis, organization structure, product line, financial projections. A solid business plan is the roadmap to success.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acada-t4')"><h3>📊 Growth & Scaling</h3><p>Expanding your business effectively.</p><span class="tag">Strategy</span></div>
+                        <div class="expandable" id="acada-t4"><div class="expandable-inner">Franchising, mergers, acquisitions, funding rounds (seed, Series A/B/C), and KPIs to track growth. Learn to scale without losing quality.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-acada">
+                    <h3>📝 Quick Quiz: Entrepreneurship</h3>
+                    <p id="quiz-acada-q">What does SWOT stand for?</p>
+                    <button class="quiz-option" onclick="checkQuiz('acada',0,this)">A) Strengths, Weaknesses, Opportunities, Threats</button>
+                    <button class="quiz-option" onclick="checkQuiz('acada',1,this)">B) Sales, Work, Operations, Time</button>
+                    <button class="quiz-option" onclick="checkQuiz('acada',2,this)">C) Strategy, Wealth, Organization, Tech</button>
+                    <p class="quiz-score" id="quiz-acada-score"></p>
+                    <button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('acada')">Retry Quiz</button>
+                </div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-acada"></div></div>
+            </div>
+
+            <!-- ACAD B -->
+            <div class="page" id="page-acad-b">
+                <div class="section-page-header"><h1>📚 ACAD B — Academic Excellence</h1><p class="adviser-name">Adviser: Mr. Juan D. Cruz</p></div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadb-t1')"><h3>📖 Literature & Composition</h3><p>Analyzing texts and crafting essays.</p><span class="tag">English</span></div>
+                        <div class="expandable" id="acadb-t1"><div class="expandable-inner">Thesis statements, paragraph structure, rhetorical devices, and literary analysis frameworks. Practice with sample essays and peer review techniques.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadb-t2')"><h3>🔢 Advanced Mathematics</h3><p>Algebra, calculus, and problem-solving.</p><span class="tag">Math</span></div>
+                        <div class="expandable" id="acadb-t2"><div class="expandable-inner">Functions, derivatives, integrals, matrix operations, and real-world applications. Step-by-step problem walkthroughs included.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadb-t3')"><h3>🔬 Science & Research</h3><p>Scientific method and lab reports.</p><span class="tag">Science</span></div>
+                        <div class="expandable" id="acadb-t3"><div class="expandable-inner">Hypothesis formation, experimental design, data collection, and proper citation formats (APA/MLA).</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadb-t4')"><h3>🌍 Social Studies</h3><p>History, geography, and civics.</p><span class="tag">Humanities</span></div>
+                        <div class="expandable" id="acadb-t4"><div class="expandable-inner">Key historical events, geopolitical concepts, and understanding government structures. Timeline reviews and map exercises.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-acadb"><h3>📝 Quick Quiz: Academic</h3><p id="quiz-acadb-q">What is the derivative of x²?</p><button class="quiz-option" onclick="checkQuiz('acadb',0,this)">A) 2x</button><button class="quiz-option" onclick="checkQuiz('acadb',1,this)">B) x</button><button class="quiz-option" onclick="checkQuiz('acadb',2,this)">C) x³/3</button><p class="quiz-score" id="quiz-acadb-score"></p><button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('acadb')">Retry Quiz</button></div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-acadb"></div></div>
+            </div>
+
+            <!-- ACAD C -->
+            <div class="page" id="page-acad-c">
+                <div class="section-page-header"><h1>🎓 ACAD C — Modern Academics</h1><p class="adviser-name">Adviser: Ms. Elena G. Reyes</p></div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadc-t1')"><h3>🧠 Critical Thinking</h3><p>Logic, reasoning, and debate.</p><span class="tag">Skills</span></div>
+                        <div class="expandable" id="acadc-t1"><div class="expandable-inner">Logical fallacies, argument structures, deductive vs inductive reasoning, and how to evaluate sources critically.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadc-t2')"><h3>📊 Data Analysis</h3><p>Interpreting charts and statistics.</p><span class="tag">Analytics</span></div>
+                        <div class="expandable" id="acadc-t2"><div class="expandable-inner">Mean, median, mode, standard deviation, regression analysis, and visualizing data effectively.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadc-t3')"><h3>🗣️ Communication</h3><p>Public speaking and presentation.</p><span class="tag">Soft Skills</span></div>
+                        <div class="expandable" id="acadc-t3"><div class="expandable-inner">Speech writing, body language, visual aids, and handling Q&A sessions confidently.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-acadc"><h3>📝 Quick Quiz: Academics</h3><p id="quiz-acadc-q">What is the mean of [2,4,6,8]?</p><button class="quiz-option" onclick="checkQuiz('acadc',0,this)">A) 5</button><button class="quiz-option" onclick="checkQuiz('acadc',1,this)">B) 4</button><button class="quiz-option" onclick="checkQuiz('acadc',2,this)">C) 6</button><p class="quiz-score" id="quiz-acadc-score"></p><button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('acadc')">Retry Quiz</button></div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-acadc"></div></div>
+            </div>
+
+            <!-- ACAD D -->
+            <div class="page" id="page-acad-d">
+                <div class="section-page-header"><h1>🏫 ACAD D — Digital Classroom</h1><p class="adviser-name">Adviser: Mr. Rafael T. Lopez</p></div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadd-t1')"><h3>💡 Study Strategies</h3><p>Effective techniques for retention.</p><span class="tag">Methods</span></div>
+                        <div class="expandable" id="acadd-t1"><div class="expandable-inner">Spaced repetition, active recall, Pomodoro technique, mind mapping, and the Feynman method for deep understanding.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadd-t2')"><h3>📋 Research Writing</h3><p>Academic paper structure.</p><span class="tag">Writing</span></div>
+                        <div class="expandable" id="acadd-t2"><div class="expandable-inner">Abstract, introduction, literature review, methodology, results, discussion, and proper referencing.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('acadd-t3')"><h3>🏆 Exam Preparation</h3><p>Test-taking strategies and drills.</p><span class="tag">Exams</span></div>
+                        <div class="expandable" id="acadd-t3"><div class="expandable-inner">Time management, question analysis, mock tests, and stress reduction techniques for peak performance.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-acadd"><h3>📝 Quick Quiz: Study Skills</h3><p id="quiz-acadd-q">What does the Pomodoro technique use?</p><button class="quiz-option" onclick="checkQuiz('acadd',0,this)">A) Timed intervals (25 min)</button><button class="quiz-option" onclick="checkQuiz('acadd',1,this)">B) All-nighters</button><button class="quiz-option" onclick="checkQuiz('acadd',2,this)">C) Group chanting</button><p class="quiz-score" id="quiz-acadd-score"></p><button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('acadd')">Retry Quiz</button></div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-acadd"></div></div>
+            </div>
+
+            <!-- TECHPRO A: Cooking -->
+            <div class="page" id="page-techpro-a">
+                <div class="section-page-header"><h1>🍳 TECHPRO A — Cooking & Culinary</h1><p class="adviser-name">Adviser: Chef Maria L. Fernando</p></div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpa-t1')"><h3>🔪 Knife Skills</h3><p>Master basic cutting techniques.</p><span class="tag">Technique</span></div>
+                        <div class="expandable" id="techpa-t1"><div class="expandable-inner">Dice, julienne, chiffonade, brunoise. Safety first: claw grip, sharp knives, and proper cutting board setup.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpa-t2')"><h3>🍲 Recipe: Adobo</h3><p>Classic Filipino adobo recipe.</p><span class="tag">Recipe</span></div>
+                        <div class="expandable" id="techpa-t2"><div class="expandable-inner"><strong>Ingredients:</strong> Chicken/pork, soy sauce, vinegar, garlic, bay leaves, peppercorns. <strong>Method:</strong> Marinate, sear, simmer until tender. Balance of salty, sour, and savory flavors.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpa-t3')"><h3>🛡️ Food Safety</h3><p>HACCP principles and hygiene.</p><span class="tag">Safety</span></div>
+                        <div class="expandable" id="techpa-t3"><div class="expandable-inner">Temperature danger zone (4°C–60°C), cross-contamination prevention, proper storage, and personal hygiene standards.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpa-t4')"><h3>🔥 Cooking Methods</h3><p>Dry and moist heat techniques.</p><span class="tag">Methods</span></div>
+                        <div class="expandable" id="techpa-t4"><div class="expandable-inner">Roasting, grilling, sautéing, steaming, braising, and sous vide. Each method's effect on texture and flavor.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-techpa"><h3>📝 Quick Quiz: Cooking</h3><p id="quiz-techpa-q">What temperature range is the danger zone?</p><button class="quiz-option" onclick="checkQuiz('techpa',0,this)">A) 4°C–60°C</button><button class="quiz-option" onclick="checkQuiz('techpa',1,this)">B) 0°C–30°C</button><button class="quiz-option" onclick="checkQuiz('techpa',2,this)">C) 10°C–50°C</button><p class="quiz-score" id="quiz-techpa-score"></p><button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('techpa')">Retry Quiz</button></div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-techpa"></div></div>
+            </div>
+
+            <!-- TECHPRO B: Programming & Drafting -->
+            <div class="page" id="page-techpro-b">
+                <div class="section-page-header"><h1>💻 TECHPRO B — Programming & Technical Drafting</h1><p class="adviser-name">Adviser: Engr. Mark D. Villanueva</p></div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpb-t1')"><h3>&lt;/&gt; Python Basics</h3><p>Variables, loops, and functions.</p><span class="tag">Code</span></div>
+                        <div class="expandable" id="techpb-t1"><div class="expandable-inner"><pre>def greet(name):
+                        return f"Hello, {name}!"
+                    print(greet("Student"))</pre>Learn data types, control flow, and function definitions.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpb-t2')"><h3>📐 Technical Drafting</h3><p>Blueprint reading and CAD basics.</p><span class="tag">Drafting</span></div>
+                        <div class="expandable" id="techpb-t2"><div class="expandable-inner">Orthographic projections, isometric views, dimensioning standards, and layer management in CAD software.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpb-t3')"><h3>🧩 Design Concepts</h3><p>UI/UX and product design principles.</p><span class="tag">Design</span></div>
+                        <div class="expandable" id="techpb-t3"><div class="expandable-inner">Wireframing, prototyping, user personas, accessibility standards, and iterative design processes.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-techpb"><h3>📝 Quick Quiz: Programming</h3><p id="quiz-techpb-q">Which keyword defines a function in Python?</p><button class="quiz-option" onclick="checkQuiz('techpb',0,this)">A) def</button><button class="quiz-option" onclick="checkQuiz('techpb',1,this)">B) function</button><button class="quiz-option" onclick="checkQuiz('techpb',2,this)">C) func</button><p class="quiz-score" id="quiz-techpb-score"></p><button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('techpb')">Retry Quiz</button></div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-techpb"></div></div>
+            </div>
+
+            <!-- TECHPRO C: Technology -->
+            <div class="page" id="page-techpro-c">
+                <div class="section-page-header"><h1>🖥️ TECHPRO C — General Technology</h1><p class="adviser-name">Adviser: Mr. Angelo P. Ramirez</p></div>
+                <div class="topic-grid">
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpc-t1')"><h3>🌐 Internet Basics</h3><p>How the web works.</p><span class="tag">Web</span></div>
+                        <div class="expandable" id="techpc-t1"><div class="expandable-inner">HTTP/HTTPS, DNS, IP addresses, browsers, servers, and the request-response cycle. Understanding the backbone of the internet.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpc-t2')"><h3>🔒 Cybersecurity</h3><p>Protecting digital information.</p><span class="tag">Security</span></div>
+                        <div class="expandable" id="techpc-t2"><div class="expandable-inner">Phishing, malware, encryption, password hygiene, 2FA, and safe browsing practices.</div></div>
+                    </div>
+                    <div class="topic-group">
+                        <div class="topic-card" onclick="toggleExpand('techpc-t3')"><h3>☁️ Cloud Computing</h3><p>SaaS, PaaS, and IaaS explained.</p><span class="tag">Cloud</span></div>
+                        <div class="expandable" id="techpc-t3"><div class="expandable-inner">AWS, Google Cloud, Azure basics. Virtual machines, storage buckets, and serverless computing concepts.</div></div>
+                    </div>
+                </div>
+                <div class="quiz-block" id="quiz-techpc"><h3>📝 Quick Quiz: Technology</h3><p id="quiz-techpc-q">What does DNS stand for?</p><button class="quiz-option" onclick="checkQuiz('techpc',0,this)">A) Domain Name System</button><button class="quiz-option" onclick="checkQuiz('techpc',1,this)">B) Digital Network Service</button><button class="quiz-option" onclick="checkQuiz('techpc',2,this)">C) Data Node Sync</button><p class="quiz-score" id="quiz-techpc-score"></p><button class="btn btn-outline" style="margin-top:8px;" onclick="resetQuiz('techpc')">Retry Quiz</button></div>
+                <div style="margin-top:16px;"><h3>✅ Progress Checklist</h3><div id="checklist-techpc"></div></div>
+            </div>
+
+            <!-- no results message -->
+            <div class="search-no-results" id="searchNoResults">🔍 No topics match your search. Try a different keyword.</div>
+
+        </div>
+    </div>
+
+    <script>
+        // === STATE ===
+        let currentPage = 'home';
+        const quizAnswers = {
+            'acada': 0,
+            'acadb': 0,
+            'acadc': 0,
+            'acadd': 0,
+            'techpa': 0,
+            'techpb': 0,
+            'techpc': 0
+        };
+        const quizAnswered = {};
+        const sectionThemes = {
+            'acad-a': 'theme-acad-a',
+            'acad-b': 'theme-acad-b',
+            'acad-c': 'theme-acad-c',
+            'acad-d': 'theme-acad-d',
+            'techpro-a': 'theme-techpro-a',
+            'techpro-b': 'theme-techpro-b',
+            'techpro-c': 'theme-techpro-c'
+        };
+        const checklistData = {
+            'acada': ['Read Business Concepts', 'Review Marketing Lessons', 'Draft a Business Plan', 'Study Growth Strategies'],
+            'acadb': ['Analyze a literary text', 'Solve 5 calculus problems', 'Write a lab report outline', 'Review historical timeline'],
+            'acadc': ['Practice logical fallacies', 'Compute statistical measures', 'Prepare a short speech'],
+            'acadd': ['Try Pomodoro technique', 'Outline a research paper', 'Take a mock exam'],
+            'techpa': ['Practice knife cuts', 'Cook adobo recipe', 'Memorize danger zone temps', 'Study cooking methods'],
+            'techpb': ['Write a Python function', 'Read a blueprint', 'Create a wireframe'],
+            'techpc': ['Understand HTTP/HTTPS', 'Set up 2FA', 'Explore cloud services']
+        };
+        let searchActive = false;
+        let searchQuery = '';
+
+        // === INIT ===
+        function init() {
+            loadDarkMode();
+            loadAllChecklists();
+            loadAllQuizStates();
+            updateThemeClass();
+            // ensure home is active
+            const homePage = document.getElementById('page-home');
+            if (homePage) homePage.classList.add('active-page');
+            document.querySelectorAll('.page').forEach(p => {
+                if (p.id !== 'page-home') p.classList.remove('active-page');
+            });
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const homeNav = document.querySelector('[data-page="home"]');
+            if (homeNav) homeNav.classList.add('active');
+
+            // Handle logo image loading fallback
+            const logoImg = document.getElementById('siteLogo');
+            const fallback = document.querySelector('.logo-fallback');
+            if (logoImg) {
+                logoImg.onerror = function() {
+                    this.style.display = 'none';
+                    if (fallback) fallback.style.display = 'flex';
+                };
+                // If image loads, hide fallback
+                logoImg.onload = function() {
+                    if (fallback) fallback.style.display = 'none';
+                };
+                // If image already loaded (cached)
+                if (logoImg.complete && logoImg.naturalWidth > 0) {
+                    if (fallback) fallback.style.display = 'none';
+                }
+            }
+        }
+
+        // === NAVIGATION ===
+        function navigateTo(pageId) {
+            if (currentPage === pageId) {
+                closeSidebar();
+                return;
+            }
+
+            currentPage = pageId;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) targetPage.classList.add('active-page');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navItem = document.querySelector(`[data-page="${pageId}"]`);
+            if (navItem) navItem.classList.add('active');
+
+            updateThemeClass();
+            const contentArea = document.getElementById('contentArea');
+            if (contentArea) contentArea.scrollIntoView({ behavior: 'smooth' });
+            closeSidebar();
+            loadAllChecklists();
+
+            if (searchActive) {
+                const searchInput = document.getElementById('globalSearch');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchActive = false;
+                    searchQuery = '';
+                    document.querySelectorAll('.topic-card').forEach(c => c.style.display = '');
+                    document.querySelectorAll('.expandable').forEach(e => e.classList.remove('open'));
+                    document.getElementById('searchNoResults').classList.remove('show');
+                }
+            }
+        }
+
+        function updateThemeClass() {
+            const main = document.getElementById('mainContent');
+            Object.values(sectionThemes).forEach(c => main.classList.remove(c));
+            if (sectionThemes[currentPage]) {
+                main.classList.add(sectionThemes[currentPage]);
+            }
+            document.body.classList.remove('techpro-b-active');
+            if (currentPage === 'techpro-b') {
+                document.body.classList.add('techpro-b-active');
+            }
+        }
+
+        // === SIDEBAR ===
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // === DARK MODE ===
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark ? '1' : '0');
+            updateThemeClass();
+        }
+
+        function loadDarkMode() {
+            if (localStorage.getItem('darkMode') === '1') {
+                document.body.classList.add('dark-mode');
+            }
+            updateThemeClass();
+        }
+
+        // === EXPANDABLE TOPICS ===
+        function toggleExpand(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isOpen = el.classList.contains('open');
+            const grid = el.closest('.topic-grid');
+            if (grid) {
+                grid.querySelectorAll('.expandable.open').forEach(e => {
+                    if (e.id !== id) e.classList.remove('open');
+                });
+            }
+            if (isOpen) {
+                el.classList.remove('open');
+            } else {
+                el.classList.add('open');
+            }
+        }
+
+        // === QUIZ SYSTEM ===
+        function checkQuiz(sectionKey, chosenIndex, btnElement) {
+            if (quizAnswered[sectionKey]) return;
+            const correctIndex = quizAnswers[sectionKey];
+            const allOptions = btnElement.parentElement.querySelectorAll('.quiz-option');
+            allOptions.forEach((opt, i) => {
+                opt.style.pointerEvents = 'none';
+                if (i === correctIndex) opt.classList.add('correct');
+                if (i === chosenIndex && i !== correctIndex) opt.classList.add('wrong');
+            });
+            const scoreEl = document.getElementById('quiz-' + sectionKey + '-score');
+            if (chosenIndex === correctIndex) {
+                scoreEl.textContent = '✅ Correct! Great job!';
+                scoreEl.style.color = 'var(--success)';
+            } else {
+                scoreEl.textContent = '❌ Incorrect. The correct answer is highlighted in green.';
+                scoreEl.style.color = 'var(--danger)';
+            }
+            quizAnswered[sectionKey] = true;
+            localStorage.setItem('quizAnswered_' + sectionKey, '1');
+        }
+
+        function resetQuiz(sectionKey) {
+            quizAnswered[sectionKey] = false;
+            localStorage.removeItem('quizAnswered_' + sectionKey);
+            const quizBlock = document.getElementById('quiz-' + sectionKey);
+            if (!quizBlock) return;
+            const allOptions = quizBlock.querySelectorAll('.quiz-option');
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'auto';
+                opt.classList.remove('correct', 'wrong');
+            });
+            const scoreEl = document.getElementById('quiz-' + sectionKey + '-score');
+            if (scoreEl) {
+                scoreEl.textContent = '';
+                scoreEl.style.color = '';
+            }
+        }
+
+        function loadAllQuizStates() {
+            Object.keys(quizAnswers).forEach(key => {
+                const isAnswered = localStorage.getItem('quizAnswered_' + key) === '1';
+                const quizBlock = document.getElementById('quiz-' + key);
+                if (!quizBlock) return;
+                const allOptions = quizBlock.querySelectorAll('.quiz-option');
+                const correctIndex = quizAnswers[key];
+                const scoreEl = document.getElementById('quiz-' + key + '-score');
+
+                if (isAnswered) {
+                    quizAnswered[key] = true;
+                    allOptions.forEach((opt, i) => {
+                        opt.style.pointerEvents = 'none';
+                        if (i === correctIndex) opt.classList.add('correct');
+                    });
+                    if (scoreEl) {
+                        scoreEl.textContent = '✅ Answered correctly!';
+                        scoreEl.style.color = 'var(--success)';
+                    }
+                } else {
+                    quizAnswered[key] = false;
+                    allOptions.forEach(opt => {
+                        opt.style.pointerEvents = 'auto';
+                        opt.classList.remove('correct', 'wrong');
+                    });
+                    if (scoreEl) {
+                        scoreEl.textContent = '';
+                        scoreEl.style.color = '';
+                    }
+                }
+            });
+        }
+
+        // === PROGRESS CHECKLIST ===
+        function renderChecklist(sectionKey) {
+            const container = document.getElementById('checklist-' + sectionKey);
+            if (!container) return;
+            const items = checklistData[sectionKey] || [];
+            const saved = JSON.parse(localStorage.getItem('checklist_' + sectionKey) || '{}');
+            container.innerHTML = items.map((item, i) => {
+                const checked = saved[i] || false;
+                return `<div class="checklist-item ${checked ? 'checked' : ''}" onclick="toggleCheck('${sectionKey}',${i})">
+                    <input type="checkbox" ${checked ? 'checked' : ''} tabindex="-1" onclick="event.stopPropagation();">
+                    <span>${item}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleCheck(sectionKey, index) {
+            const saved = JSON.parse(localStorage.getItem('checklist_' + sectionKey) || '{}');
+            saved[index] = !saved[index];
+            localStorage.setItem('checklist_' + sectionKey, JSON.stringify(saved));
+            renderChecklist(sectionKey);
+        }
+
+        function loadAllChecklists() {
+            Object.keys(checklistData).forEach(key => renderChecklist(key));
+        }
+
+        // === SEARCH ===
+        function handleSearch() {
+            const input = document.getElementById('globalSearch');
+            const query = input.value.toLowerCase().trim();
+            searchQuery = query;
+            const noResultsEl = document.getElementById('searchNoResults');
+
+            document.querySelectorAll('.topic-group').forEach(g => g.style.display = '');
+            document.querySelectorAll('.expandable').forEach(e => e.classList.remove('open'));
+
+            if (!query) {
+                searchActive = false;
+                noResultsEl.classList.remove('show');
+                return;
+            }
+
+            searchActive = true;
+            let foundAny = false;
+            let firstMatchPage = null;
+
+            document.querySelectorAll('.page').forEach(page => {
+                const groups = page.querySelectorAll('.topic-group');
+                let pageHasMatch = false;
+
+                groups.forEach(group => {
+                    const card = group.querySelector('.topic-card');
+                    if (!card) return;
+                    const text = card.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        group.style.display = '';
+                        pageHasMatch = true;
+                        foundAny = true;
+                        const expandable = group.querySelector('.expandable');
+                        if (expandable) expandable.classList.add('open');
+                    } else {
+                        group.style.display = 'none';
+                    }
+                });
+
+                if (pageHasMatch && !firstMatchPage) {
+                    const pageId = page.id.replace('page-', '');
+                    firstMatchPage = pageId;
+                }
+            });
+
+            if (!foundAny) {
+                noResultsEl.classList.add('show');
+            } else {
+                noResultsEl.classList.remove('show');
+            }
+
+            if (firstMatchPage && firstMatchPage !== currentPage) {
+                const pageId = firstMatchPage;
+                currentPage = pageId;
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+                const targetPage = document.getElementById('page-' + pageId);
+                if (targetPage) targetPage.classList.add('active-page');
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                const navItem = document.querySelector(`[data-page="${pageId}"]`);
+                if (navItem) navItem.classList.add('active');
+                updateThemeClass();
+                closeSidebar();
+            }
+        }
+
+        // === INIT ON LOAD ===
+        document.addEventListener('DOMContentLoaded', init);
+
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            if (e.target === overlay && overlay.classList.contains('show')) {
+                closeSidebar();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSidebar();
+        });
+
+        console.log('📚 LearnerHub — School Reviewer Platform Ready!');
+        console.log('✨ Features: Dark/Light Mode | Quizzes | Progress Checklists | Search | 7 Themed Sections');
+        console.log('🖼️ Logo: Replace the src attribute in the .sidebar-logo img tag with your own image URL.');
+    </script>
+</body>
+</html>
